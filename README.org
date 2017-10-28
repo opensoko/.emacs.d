@@ -1,6 +1,18 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Eugene Rwagasore
 
+* Installing Emacs
+On macOS, [[https://brew.sh][homebrew] is the defacto package manager.
+I install Emacs with following parameters:
+- ~--HEAD~ :: To pull the latest development version of emacs
+- ~--with-cocoa~ :: Build emacs with macOS graphical UI
+- ~--with-imagemagick@6~ :: Build Emacs with imagemagick for image processing
+- ~--with-librsvg~ :: Build Emacs with librsvg for SVG(vector images) processing
+- ~--with-gnutls~ :: Build Emacs with gnuTLS to enable encrypted SSL and TLS connection
+
+#+BEGIN_SRC sh
+  brew install emacs --HEAD --with-cocoa --with-imagemagick@6 --with-libsvg --with-gnutls
+#+END_SRC
 
 * Personal Information
 
