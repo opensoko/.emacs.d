@@ -26,8 +26,8 @@
 (eval-when-compile
   (require 'use-package))
 (require 'diminish)                ;; if you use :diminish
-(require 'bind-key)
+(require 'bind-key)                ;; if you use any :bind variant
 ;(setq use-package-verbose t)
 
 ;;; Load the config
-(org-babel-load-file (concat user-emacs-directory "config.org"))
+(org-babel-load-file (concat user-emacs-directory "README.org"))
