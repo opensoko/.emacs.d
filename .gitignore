@@ -1,6 +1,10 @@
+.DS_Store
+
 auto-save-list
 backups
-README.el
 elpa
+
 /ido.last
 /smex-items
+
+README.el
