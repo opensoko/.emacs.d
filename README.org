@@ -27,6 +27,12 @@ customize settings in [[file:init.el][init.el]].
   (load custom-file)
 #+end_src
 
+* Themes
+#+BEGIN_SRC emacs-lisp
+  (push "~/.emacs.d/themes" custom-theme-load-path)
+  (load-theme 'darkness t)
+#+END_SRC
+
 * Sane defaults
 Let's start with some sane defaults, shall we?
 Sources for this section include [[https://github.com/magnars/.emacs.d/blob/master/settings/sane-defaults.el][Magnars Sveen]] and [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]].
@@ -75,6 +81,15 @@ Sources for this section include [[https://github.com/magnars/.emacs.d/blob/mast
 
   ;; Don't beep at me
   (setq visible-bell t)
+
+  ;; dependable keybindings
+  (bind-key "\C-c l" 'goto-line)
+  (bind-key "\C-c n" 'rename-buffer)
+  (bind-key "<C-s-return>" 'toggle-frame-fullscreen)
+
+  ;; buffer switching
+  (bind-key "s-{" 'previous-buffer)
+  (bind-key "s-}" 'next-buffer)
 #+end_src
 
 The following function for ~occur-dwim~ is taken from [[https://github.com/abo-abo][Oleh Krehel]] from
@@ -364,13 +379,6 @@ Enable glyph rendering and use whitespace-mode
 
   ;; Don't make new frames when opening a new file with Emacs
   (setq ns-pop-up-frames nil)
-
-  ;; Fullscreen
-  (bind-key "<s-C-return>" 'toggle-frame-fullscreen)
-
-  ;; buffer switching
-  (bind-key "s-{" 'previous-buffer)
-  (bind-key "s-}" 'next-buffer)
 #+END_SRC
 * Shell configurations
 Preprocess commands sent to shell prompt and
@@ -418,17 +426,6 @@ process differently clear, man commands
     :init
     (exec-path-from-shell-initialize))
 #+END_SRC
-* Themes
-  :PROPERTIES:
-  :ORDERED:  t
-  :END:
-#+BEGIN_SRC emacs-lisp
-  (use-package darkness
-    :defer t
-    :init (load-theme 'darkness))
-
-#+END_SRC
-
 * IDO
 #+BEGIN_SRC emacs-lisp
   (use-package ido
@@ -531,7 +528,18 @@ process differently clear, man commands
     (setq company-tooltip-limit 20)
     (setq company-minimum-prefix-length 1)
     (setq company-echo-delay 0)
-    (add-hook 'after-init-hook 'global-company-mode))
+  
+    (add-hook 'after-init-hook 'global-company-mode)
+  
+    (eval-after-load 'company
+    `(let (( Map  company-active-map))
+       (define-key company-active-map (kbd "\C-n") 'company-select-next)
+       (define-key company-active-map (kbd "\C-n") 'company-select-next)
+       (define-key company-active-map (kbd "\C-p") 'company-select-previous)
+       (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+       (define-key company-active-map (kbd "<tab>") 'company-complete))))
+  
+  
 #+END_SRC
 
 * Rainbow mode
@@ -555,4 +563,22 @@ process differently clear, man commands
     :ensure t
     :mode (("\\.markdown\\'" . markdown-mode)
            ("\\.md\\'"       . markdown-mode)))
+#+END_SRC
+* Python settings
+#+BEGIN_SRC emacs-lisp
+  ;; enable eldoc mode for python files
+  (add-hook 'python-mode-hook 'eldoc-mode)
+
+  (use-package anaconda-mode
+    :ensure t
+    :config (add-hook 'python-mode-hook 'anaconda-mode))
+
+  (use-package company-anaconda
+    :ensure t
+    :config
+    (eval-after-load "company" '(add-to-list 'company-backends 'company-anaconda)))
+
+  (use-package pyenv-mode
+    :ensure t
+    :config (pyenv-mode))
 #+END_SRC
