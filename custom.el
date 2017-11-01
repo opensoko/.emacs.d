@@ -24,7 +24,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (company-anaconda pyenv-mode anaconda-mode rainbow-mode powerline telephone-line darkness zoom-frm web-mode use-package solarized-theme smex smartscan smartparens scratch multiple-cursors markdown-mode magit ido-vertical-mode exec-path-from-shell dracula-theme company)))
+    (docker-tramp dockerfile-mode company-anaconda pyenv-mode anaconda-mode rainbow-mode powerline telephone-line darkness zoom-frm web-mode use-package solarized-theme smex smartscan smartparens scratch multiple-cursors markdown-mode magit ido-vertical-mode exec-path-from-shell dracula-theme company)))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(tramp-syntax (quote default) nil (tramp))
