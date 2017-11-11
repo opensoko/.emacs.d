@@ -1,7 +1,7 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Eugene Rwagasore
 
-* Installing Emacs
+* Install Emacs
 On macOS, [[https://brew.sh][homebrew]] is the defacto package manager.
 I install Emacs with following parameters:
 - ~--HEAD~ :: To pull the latest development version of emacs
