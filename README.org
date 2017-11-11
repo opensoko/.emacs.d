@@ -46,6 +46,9 @@ Sources for this section include [[https://github.com/magnars/.emacs.d/blob/mast
   ;; Answering just 'y' or 'n' will do
   (defalias 'yes-or-no-p 'y-or-n-p)
 
+  ;; disable follow link to git controlled symbolic link
+  (setq vc-follow-symlinks nil)
+
   ;; Keep all backup and auto-save files in one directory
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
   (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
@@ -134,7 +137,7 @@ Highlighting special text within any buffer
 #+END_SRC
 
 Enable ligature support for Pragmata Pro. Details are here [[https://github.com/fabrizioschiavi/pragmatapro][Pragmata Pro Github Repo]]
-#+BEGIN_SRC emacs-lisp
+;; #+BEGIN_SRC emacs-lisp
   (setq prettify-symbols-unprettify-at-point 'right-edge)
 
   (defconst pragmatapro-prettify-symbols-alist
@@ -362,7 +365,6 @@ Enable ligature support for Pragmata Pro. Details are here [[https://github.com/
   (add-hook 'prog-mode-hook #'add-pragmatapro-prettify-symbols-alist)
 #+END_SRC
 
-
 Enable glyph rendering and use whitespace-mode
 #+BEGIN_SRC emacs-lisp
   (global-prettify-symbols-mode t)
@@ -513,6 +515,14 @@ process differently clear, man commands
     :config
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter-fringe
+    :disabled t
+    :diminish git-gutter-mode
+    :init (setq git-gutter-fr:side 'right-fringe)
+    :config (global-git-gutter-mode t))
+#+END_SRC
 * Docker
   #+BEGIN_SRC emacs-lisp
     (use-package dockerfile-mode
@@ -534,23 +544,35 @@ process differently clear, man commands
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
-    :config 
-    (setq company-idle-delay 0.3)
-    (setq company-tooltip-limit 20)
-    (setq company-minimum-prefix-length 1)
-    (setq company-echo-delay 0)
-  
-    (add-hook 'after-init-hook 'global-company-mode)
-  
-    (eval-after-load 'company
-    `(let (( Map  company-active-map))
-       (define-key company-active-map (kbd "\C-n") 'company-select-next)
-       (define-key company-active-map (kbd "\C-n") 'company-select-next)
-       (define-key company-active-map (kbd "\C-p") 'company-select-previous)
-       (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
-       (define-key company-active-map (kbd "<tab>") 'company-complete))))
-  
-  
+    :config
+    (progn 
+      (setq company-idle-delay 0.3)
+      (setq company-tooltip-limit 20)
+      (setq company-minimum-prefix-length 1)
+      (setq company-echo-delay 0)
+
+      (add-hook 'after-init-hook 'global-company-mode)
+
+      (eval-after-load 'company
+        `(let (( Map  company-active-map))
+           (define-key company-active-map (kbd "\C-n") 'company-select-next)
+           (define-key company-active-map (kbd "\C-n") 'company-select-next)
+           (define-key company-active-map (kbd "\C-p") 'company-select-previous)
+           (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+           (define-key company-active-map (kbd "<tab>") 'company-complete)))))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package company-shell
+    :after company
+    :config
+    (add-to-list 'company-backends #'company-shell))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-tern
+    :after company
+    :config
+    (add-to-list 'company-backends #'company-tern))
 #+END_SRC
 
 * Rainbow mode
@@ -563,9 +585,13 @@ process differently clear, man commands
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
-    :init
+    :config
     (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-attr-indent-offset 2)
+    (setq web-mode-markup-indent-offset 2))
 #+END_SRC
 
 * Markdown
@@ -592,4 +618,63 @@ process differently clear, man commands
   (use-package pyenv-mode
     :ensure t
     :config (pyenv-mode))
+#+END_SRC
+* RestClient mode
+#+BEGIN_SRC emacs-lisp
+  (use-package restclient-mode
+    :defer 5
+    :config (add-hook 'restclient-mode-hook 'company-restclient))
+
+  (use-package company-restclient
+    :ensure t
+    :config
+    (progn
+      (add-hook 'restclient-mode-hook
+                (lambda ()
+                  (set (make-local-variable 'company-backends)'(company-restclient))
+                  (company-mode t)))))
+
+  (use-package ob-restclient
+    :ensure t
+    :config 
+    (org-babel-do-load-languages 'org-babel-load-languages '((restclient . t))))
+#+END_SRC
+
+* Parinfer mode
+#+BEGIN_SRC emacs-lisp
+  (use-package parinfer
+    :ensure t
+    :bind (("C-," . parinfer-toggle-mode))
+    :init
+    (progn
+      (setq parinfer-extensions
+            '(defaults       ; should be included.
+              pretty-parens  ; different paren styles for different modes.
+              evil           ; If you use Evil.
+              lispy          ; If you use Lispy. With this extension, you should install Lispy and do not enable lispy-mode directly.
+              paredit        ; Introduce some paredit commands.
+              smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+              smart-yank))   ; Yank behavior depend on mode.
+      (add-hook 'clojure-mode-hook #'parinfer-mode)
+      (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+      (add-hook 'common-lisp-mode-hook #'parinfer-mode)
+      (add-hook 'scheme-mode-hook #'parinfer-mode)
+      (add-hook 'lisp-mode-hook #'parinfer-mode)))
+#+END_SRC
+* JSON mode
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :init (setq js-indent-level 2))
+#+END_SRC
+
+* Anzu
+#+BEGIN_SRC emacs-lisp
+  (use-package anzu
+    :defer t
+    :diminish anzu
+    :bind
+    (([remap query-replace] . anzu-query-replace)
+     ("s-q" . anzu-query-replace)
+     ("C-q" . anzu-query-replace-at-cursor-thing))  
+    :config (global-anzu-mode t))
 #+END_SRC
