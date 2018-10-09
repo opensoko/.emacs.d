@@ -1,24 +1,6 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Eugene Rwagasore
 
-* Install Emacs
-On macOS, [[https://brew.sh][homebrew]] is the defacto package manager.
-I install Emacs with following parameters:
-- ~--HEAD~ :: To pull the latest development version of emacs
-- ~--with-cocoa~ :: Build emacs with macOS graphical UI
-- ~--with-imagemagick@6~ :: Build Emacs with imagemagick for image processing
-- ~--with-librsvg~ :: Build Emacs with librsvg for SVG(vector images) processing
-- ~--with-gnutls~ :: Build Emacs with gnuTLS to enable encrypted SSL and TLS connection
-#+BEGIN_SRC sh
-  brew install emacs --HEAD --with-cocoa --with-imagemagick@6 --with-libsvg --with-gnutls
-#+END_SRC
-
-* Personal Information
-#+begin_src emacs-lisp
-(setq user-full-name "Eugene Rwagasore"
-      user-mail-address "rwagasore@gmail.com")
-#+end_src
-
 * Customize settings
 Set up the customize file to its own separate file, instead of saving
 customize settings in [[file:init.el][init.el]]. 
@@ -27,95 +9,6 @@ customize settings in [[file:init.el][init.el]].
   (load custom-file)
 #+end_src
 
-* Themes
-#+BEGIN_SRC emacs-lisp
-  (push "~/.emacs.d/themes" custom-theme-load-path)
-  (load-theme 'darkness t)
-#+END_SRC
-
-* Sane defaults
-Let's start with some sane defaults, shall we?
-Sources for this section include [[https://github.com/magnars/.emacs.d/blob/master/settings/sane-defaults.el][Magnars Sveen]] and [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]].
-#+begin_src emacs-lisp
-  ;; These functions are useful. Activate them.
-  (put 'downcase-region 'disabled nil)
-  (put 'upcase-region 'disabled nil)
-  (put 'narrow-to-region 'disabled nil)
-  (put 'dired-find-alternate-file 'disabled nil)
-
-  ;; Answering just 'y' or 'n' will do
-  (defalias 'yes-or-no-p 'y-or-n-p)
-
-  ;; disable follow link to git controlled symbolic link
-  (setq vc-follow-symlinks nil)
-
-  ;; Keep all backup and auto-save files in one directory
-  (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-  (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
-
-  ;; UTF-8 please
-  (setq locale-coding-system 'utf-8) ; pretty
-  (set-terminal-coding-system 'utf-8) ; pretty
-  (set-keyboard-coding-system 'utf-8) ; pretty
-  (set-selection-coding-system 'utf-8) ; please
-  (prefer-coding-system 'utf-8) ; with sugar on top
-
-  (setq-default indent-tabs-mode nil)
-  (setq-default indicate-empty-lines t)
-
-  ;; Don't count two spaces after a period as the end of a sentence.
-  ;; Just one space is needed.
-  (setq sentence-end-double-space nil)
-
-  ;; delete the region when typing, just like as we expect nowadays.
-  (delete-selection-mode t)
-
-  (show-paren-mode t)
-
-  (column-number-mode t)
-
-  (global-visual-line-mode)
-  (diminish 'visual-line-mode)
-
-  (setq uniquify-buffer-name-style 'reverse)
-  (setq uniquify-separator "|")
-  (setq uniquify-after-kill-buffer-p t)
-  (setq uniquify-ignore-buffers-re "^\\*")
-
-  ;; -i gets alias definitions from .bash_profile
-  (setq shell-command-switch "-ic")
-
-  ;; Don't beep at me
-  (setq visible-bell t)
-
-  ;; dependable keybindings
-  (bind-key "\C-c l" 'goto-line)
-  (bind-key "\C-c n" 'rename-buffer)
-  (bind-key "<C-s-return>" 'toggle-frame-fullscreen)
-
-  ;; buffer switching
-  (bind-key "s-{" 'previous-buffer)
-  (bind-key "s-}" 'next-buffer)
-#+end_src
-
-The following function for ~occur-dwim~ is taken from [[https://github.com/abo-abo][Oleh Krehel]] from
-[[http://oremacs.com/2015/01/26/occur-dwim/][his blog post at (or emacs]]. It takes the current region or the symbol
-at point as the default value for occur.
-
-#+begin_src emacs-lisp
-(defun occur-dwim ()
-  "Call `occur' with a sane default."
-  (interactive)
-  (push (if (region-active-p)
-            (buffer-substring-no-properties
-             (region-beginning)
-             (region-end))
-          (thing-at-point 'symbol))
-        regexp-history)
-  (call-interactively 'occur))
-
-(bind-key "M-s o" 'occur-dwim)
-#+end_src
 * Fonts & Text rendering settings
 [[https://www.fsd.it/shop/fonts/pragmatapro/][Pragmata Pro]] is one of well designed monospaced font
 One of its character multi language and ligature support
@@ -123,6 +16,11 @@ One of its character multi language and ligature support
   (setq-default line-spacing 5)
   (setq-default line-pixel-height 5)
   (add-to-list 'default-frame-alist '(font . "PragmataPro-15"))
+  (add-to-list 'default-frame-alist '(top . 251))
+  (add-to-list 'default-frame-alist '(left . 374))
+  (add-to-list 'default-frame-alist '(height . 32))
+  (add-to-list 'default-frame-alist '(width . 114))
+
 #+END_SRC
 
 Highlighting special text within any buffer
@@ -137,7 +35,7 @@ Highlighting special text within any buffer
 #+END_SRC
 
 Enable ligature support for Pragmata Pro. Details are here [[https://github.com/fabrizioschiavi/pragmatapro][Pragmata Pro Github Repo]]
-;; #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (setq prettify-symbols-unprettify-at-point 'right-edge)
 
   (defconst pragmatapro-prettify-symbols-alist
@@ -372,8 +270,120 @@ Enable glyph rendering and use whitespace-mode
   (use-package whitespace
     :bind ("\C-c w" . whitespace-mode))
 #+END_SRC
+
+* Sane defaults
+Let's start with some sane defaults, shall we?
+Sources for this section include [[https://github.com/magnars/.emacs.d/blob/master/settings/sane-defaults.el][Magnars Sveen]] and [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua]].
+#+begin_src emacs-lisp
+  ;; Answering just 'y' or 'n' will do
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; disable backing-up
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+
+  ;; Splash Screen
+  (setq inhibit-startup-screen t)
+  (setq initial-scratch-message ";; Happy Hacking")
+
+  ;; UTF-8 please
+  (setq locale-coding-system 'utf-8) ; pretty
+  (set-terminal-coding-system 'utf-8) ; pretty
+  (set-keyboard-coding-system 'utf-8) ; pretty
+  (set-selection-coding-system 'utf-8) ; please
+  (prefer-coding-system 'utf-8) ; with sugar on top
+
+  (setq-default indent-tabs-mode nil)
+  (setq-default indicate-empty-lines t)
+
+  ;; Don't count two spaces after a period as the end of a sentence.
+  ;; Just one space is needed.
+  (setq sentence-end-double-space nil)
+
+  ;; delete the region when typing, just like as we expect nowadays.
+  (delete-selection-mode t)
+
+  ;; Show matching parens without delay
+  (setq show-paren-delay 0)
+  (show-paren-mode t)
+
+  (column-number-mode t)
+
+  (global-visual-line-mode)
+  (diminish 'visual-line-mode)
+
+  (setq uniquify-buffer-name-style 'reverse)
+  (setq uniquify-separator "|")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*")
+
+  ;; -i gets alias definitions from .bash_profile
+  (setq shell-command-switch "-ic")
+
+  ;; Don't beep at me
+  (setq visible-bell t)
+  (setq ring-bell-function
+        (lambda ()
+          (let ((orig-fg (face-foreground 'mode-line)))
+            (set-face-foreground 'mode-line "#F2804F")
+            (run-with-idle-timer
+             0.1 nil (lambda (fg) (set-face-foreground 'mode-line fg)) orig-fg))))
+
+
+  ;; Indentation withing babel org src blocks
+  (setq org-src-tab-acts-natively t)
+
+  ;; All The Icons
+  (use-package all-the-icons :ensure t)
+
+  ;; dependable keybindings
+  (bind-key "\C-c l" 'goto-line)
+  (bind-key "\C-c n" 'rename-buffer)
+  (bind-key "<C-s-return>" 'toggle-frame-fullscreen)
+
+  ;; buffer switching
+  (bind-key "s-{" 'previous-buffer)
+  (bind-key "s-}" 'next-buffer)
+#+end_src
+
+The following function for ~occur-dwim~ is taken from [[https://github.com/abo-abo][Oleh Krehel]] from
+[[http://oremacs.com/2015/01/26/occur-dwim/][his blog post at (or emacs]]. It takes the current region or the symbol
+at point as the default value for occur.
+
+#+begin_src emacs-lisp
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+            (buffer-substring-no-properties
+             (region-beginning)
+             (region-end))
+          (thing-at-point 'symbol))
+        regexp-history)
+  (call-interactively 'occur))
+
+(bind-key "M-s o" 'occur-dwim)
+#+end_src
+* Themes
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    (load-theme 'doom-one t))
+
+  (use-package doom-modeline
+    :ensure t
+    :defer t
+    :hook (after-init . doom-modeline-init))
+#+END_SRC
 * macOS customizations
 #+BEGIN_SRC emacs-lisp
+  ;; enable transparent titlebar with dark-mode
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
+
   ;; enable sRGB colors with emacs cocoa version
   (setq ns-use-srgb-colorspace t)
 
@@ -424,10 +434,12 @@ process differently clear, man commands
 
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-    :if (memq window-system '(mac ns))
     :ensure t
-    :init
-    (exec-path-from-shell-initialize))
+    :if (memq window-system '(mac ns x))
+    :config
+    (setenv "SHELL" "/bin/bash")
+    (exec-path-from-shell-initialize)
+    (exec-path-from-shell-copy-envs '("PATH")))
 #+END_SRC
 * IDO
 #+BEGIN_SRC emacs-lisp
@@ -454,6 +466,7 @@ process differently clear, man commands
     :ensure t
     :bind ("\C-x\C-m" . cached-smex))
 #+END_SRC
+
 * Cursor styling
 #+BEGIN_SRC emacs-lisp
   (setq-default cursor-type '(bar . 1)
@@ -495,6 +508,17 @@ process differently clear, man commands
     (sp-local-pair 'org-mode "~" "~" :actions '(wrap))
     (sp-local-pair 'org-mode "/" "/" :actions '(wrap))
     (sp-local-pair 'org-mode "*" "*" :actions '(wrap)))
+#+END_SRC
+* Which-key configuration
+#+BEGIN_SRC emacs-lisp
+  ;; Which Key
+  (use-package which-key
+    :ensure t
+    :init
+    (setq which-key-separator " ")
+    (setq which-key-prefix-prefix "+")
+    :config
+    (which-key-mode))
 #+END_SRC
 * Multiple cursors
 #+BEGIN_SRC emacs-lisp
@@ -540,6 +564,48 @@ process differently clear, man commands
   (use-package tramp
     :defer t)
 #+END_SRC
+* Rust modes
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode
+  :ensure t
+  )
+
+(use-package cargo
+  :ensure t
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode)
+  )
+
+(use-package racer
+  :ensure t
+  :config
+  (progn
+    (add-hook 'rust-mode-hook #'racer-mode)
+    (add-hook 'racer-mode-hook #'eldoc-mode)
+    (add-hook 'racer-mode-hook #'company-mode)
+    )
+  )
+
+(use-package flycheck-rust
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  )
+#+END_SRC
+
+* Clojure mode
+#+BEGIN_SRC emacs-lisp
+  (use-package inf-clojure
+    :ensure t
+    :config
+    (add-hook 'inf-clojure-mode-hook #'eldoc-mode))
+
+  (use-package clojure-mode
+    :ensure t
+    :config
+    (add-hook 'clojure-mode-hook #'eldoc-mode)
+    (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode))
+#+END_SRC
 * Company mode
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -548,7 +614,7 @@ process differently clear, man commands
     (progn 
       (setq company-idle-delay 0.3)
       (setq company-tooltip-limit 20)
-      (setq company-minimum-prefix-length 1)
+      (setq company-minimum-prefix-length 2)
       (setq company-echo-delay 0)
 
       (add-hook 'after-init-hook 'global-company-mode)
@@ -575,20 +641,16 @@ process differently clear, man commands
     (add-to-list 'company-backends #'company-tern))
 #+END_SRC
 
-* Rainbow mode
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-    :defer t)
-#+END_SRC
-
 * Web mode
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
     :config
     (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.mdx?\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  
+    
+    (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
     (setq web-mode-code-indent-offset 2)
     (setq web-mode-attr-indent-offset 2)
     (setq web-mode-markup-indent-offset 2))
@@ -618,6 +680,18 @@ process differently clear, man commands
   (use-package pyenv-mode
     :ensure t
     :config (pyenv-mode))
+
+  (use-package pyenv-mode-auto
+     :ensure t)
+#+END_SRC
+* Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode t)
+    :config
+    (setq flycheck-python-flake8-executable "flake8")
+    (setq flycheck-highlighting-mode 'lines))
 #+END_SRC
 * RestClient mode
 #+BEGIN_SRC emacs-lisp
@@ -649,18 +723,14 @@ process differently clear, man commands
     (progn
       (setq parinfer-extensions
             '(defaults       ; should be included.
-              pretty-parens  ; different paren styles for different modes.
-              evil           ; If you use Evil.
-              lispy          ; If you use Lispy. With this extension, you should install Lispy and do not enable lispy-mode directly.
-              paredit        ; Introduce some paredit commands.
-              smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
-              smart-yank))   ; Yank behavior depend on mode.
+               pretty-parens  ; different paren styles for different modes.
+               smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+               smart-yank))   ; Yank behavior depend on mode.
       (add-hook 'clojure-mode-hook #'parinfer-mode)
       (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
-      (add-hook 'common-lisp-mode-hook #'parinfer-mode)
-      (add-hook 'scheme-mode-hook #'parinfer-mode)
       (add-hook 'lisp-mode-hook #'parinfer-mode)))
 #+END_SRC
+
 * JSON mode
 #+BEGIN_SRC emacs-lisp
   (use-package json-mode
@@ -670,11 +740,9 @@ process differently clear, man commands
 * Anzu
 #+BEGIN_SRC emacs-lisp
   (use-package anzu
-    :defer t
-    :diminish anzu
-    :bind
-    (([remap query-replace] . anzu-query-replace)
-     ("s-q" . anzu-query-replace)
-     ("C-q" . anzu-query-replace-at-cursor-thing))  
-    :config (global-anzu-mode t))
+    :ensure t
+    :config
+    (global-anzu-mode 1)
+    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+    (global-set-key [remap query-replace] 'anzu-query-replace))
 #+END_SRC

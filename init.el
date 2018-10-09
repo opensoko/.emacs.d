@@ -1,10 +1,15 @@
+;;; Package --- summary
+;;; Commentary:
+
+;;; Code:
 ;;; Begin initialization
 ;; Turn off mouse interface early in startup to avoid momentary display
 (when window-system
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
+  ;; disable these modes
   (scroll-bar-mode -1)
-  (tooltip-mode -1))
+  (tool-bar-mode   -1)
+  (tooltip-mode    -1)
+  (menu-bar-mode   -1))
 
 ;; disable startup message and clear the scratch buffer
 (setq inhibit-startup-message t)
@@ -12,9 +17,12 @@
 
 ;;; Set up package
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+(setq package-enable-at-startup nil)
+(setq package-archives '(("org"   . "http://orgmode.org/elpa/")
+                         ("gnu"   . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
+
 
 ;;; Bootstrap use-package
 ;; Install use-package if it's not already installed.
@@ -31,3 +39,6 @@
 
 ;;; Load the config
 (org-babel-load-file (concat user-emacs-directory "README.org"))
+
+
+;;; init.el ends here

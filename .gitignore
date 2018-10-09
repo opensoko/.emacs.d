@@ -12,3 +12,5 @@ themes/
 /.mc-lists.el
 /.org-id-locations
 anaconda-mode
+eshell/
+url/
