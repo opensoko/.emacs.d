@@ -10,7 +10,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (doom-modeline org-bullets doom-themes zoom-frm web-narrow-mode web-completion-data use-package smex smartscan racer pyenv-mode-auto parinfer ob-restclient magit json-mode inf-clojure ido-vertical-mode flycheck-rust exec-path-from-shell eros dracula-theme dockerfile-mode docker-tramp docker-compose-mode diminish company-tern company-shell company-restclient company-quickhelp company-anaconda cargo carbon-now-sh anzu all-the-icons airline-themes))))
+    (typescript typescript-mode tide doom-modeline org-bullets doom-themes zoom-frm web-narrow-mode web-completion-data use-package smex smartscan racer pyenv-mode-auto parinfer ob-restclient magit json-mode inf-clojure ido-vertical-mode flycheck-rust exec-path-from-shell eros dracula-theme dockerfile-mode docker-tramp docker-compose-mode diminish company-tern company-shell company-restclient company-quickhelp company-anaconda cargo carbon-now-sh anzu all-the-icons airline-themes))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

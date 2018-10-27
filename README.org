@@ -10,19 +10,6 @@ customize settings in [[file:init.el][init.el]].
 #+end_src
 
 * Fonts & Text rendering settings
-[[https://www.fsd.it/shop/fonts/pragmatapro/][Pragmata Pro]] is one of well designed monospaced font
-One of its character multi language and ligature support
-#+BEGIN_SRC emacs-lisp
-  (setq-default line-spacing 5)
-  (setq-default line-pixel-height 5)
-  (add-to-list 'default-frame-alist '(font . "PragmataPro-15"))
-  (add-to-list 'default-frame-alist '(top . 251))
-  (add-to-list 'default-frame-alist '(left . 374))
-  (add-to-list 'default-frame-alist '(height . 32))
-  (add-to-list 'default-frame-alist '(width . 114))
-
-#+END_SRC
-
 Highlighting special text within any buffer
 #+BEGIN_SRC emacs-lisp
   (defun watchwords ()
@@ -656,6 +643,20 @@ process differently clear, man commands
     (setq web-mode-markup-indent-offset 2))
 #+END_SRC
 
+* Typescript
+#+BEGIN_SRC emacs-lisp
+  (use-package typescript-mode
+    :ensure t
+    :config
+      (add-to-list 'auto-mode-alist '("\\.ts[x]?\\'" . typescript-mode)))
+
+  (use-package tide
+    :ensure t
+    :after (typescript-mode company flycheck)
+    :hook ((typescript-mode . tide-setup)
+           (typescript-mode . tide-hl-identifier-mode)
+           (before-save . tide-format-before-save)))
+#+END_SRC
 * Markdown
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
