@@ -331,6 +331,7 @@ Sources for this section include [[https://github.com/magnars/.emacs.d/blob/mast
   ;; buffer switching
   (bind-key "s-{" 'previous-buffer)
   (bind-key "s-}" 'next-buffer)
+
 #+end_src
 
 The following function for ~occur-dwim~ is taken from [[https://github.com/abo-abo][Oleh Krehel]] from
@@ -496,6 +497,11 @@ process differently clear, man commands
     (sp-local-pair 'org-mode "/" "/" :actions '(wrap))
     (sp-local-pair 'org-mode "*" "*" :actions '(wrap)))
 #+END_SRC
+* Window move
+#+BEGIN_SRC emacs-lisp
+  (use-package winum
+    :config (winum-mode))
+#+END_SRC
 * Which-key configuration
 #+BEGIN_SRC emacs-lisp
   ;; Which Key
@@ -554,14 +560,12 @@ process differently clear, man commands
 * Rust modes
 #+BEGIN_SRC emacs-lisp
 (use-package rust-mode
-  :ensure t
-  )
+  :ensure t)
 
 (use-package cargo
   :ensure t
   :config
-  (add-hook 'rust-mode-hook 'cargo-minor-mode)
-  )
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
 
 (use-package racer
   :ensure t
@@ -569,15 +573,12 @@ process differently clear, man commands
   (progn
     (add-hook 'rust-mode-hook #'racer-mode)
     (add-hook 'racer-mode-hook #'eldoc-mode)
-    (add-hook 'racer-mode-hook #'company-mode)
-    )
-  )
+    (add-hook 'racer-mode-hook #'company-mode)))
 
 (use-package flycheck-rust
   :ensure t
   :config
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-  )
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 #+END_SRC
 
 * Clojure mode
@@ -628,6 +629,15 @@ process differently clear, man commands
     (add-to-list 'company-backends #'company-tern))
 #+END_SRC
 
+* Epub mode
+#+BEGIN_SRC emacs-lisp
+  (use-package nov
+    :ensure t
+    :mode ("\\.epub\\'" . nov-mode)
+    :config (progn
+              (setq nov-text-width 80)
+              (setq nov-variable-pitch nil)))
+#+END_SRC
 * Web mode
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
